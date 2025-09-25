@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { SummaryCards } from '@/components/dashboard/SummaryCards';
-import { TransactionList } from '@/components/transactions/TransactionList';
-import { IncomeVsExpensesChart } from '@/components/charts/IncomeVsExpensesChart';
-import { ExpenseBreakdownChart } from '@/components/charts/ExpenseBreakdownChart';
-import { TransactionFilters } from '@/components/filters/TransactionFilters';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { CompactSummaryCards } from '@/components/dashboard/CompactSummaryCards';
+import { CompactTransactionList } from '@/components/transactions/CompactTransactionList';
+import { CompactIncomeVsExpensesChart } from '@/components/charts/CompactIncomeVsExpensesChart';
+import { CompactExpenseBreakdownChart } from '@/components/charts/CompactExpenseBreakdownChart';
+import { CompactFilters } from '@/components/filters/CompactFilters';
 import { useTransactions } from '@/hooks/useLocalStorage';
 import { calculateFinancialSummary, calculateCategoryBreakdown, calculateMonthlyData } from '@/lib/utils/finance';
 import { DEFAULT_FILTER } from '@/lib/constants';
@@ -61,29 +62,50 @@ export default function Home() {
   }, [transactions, filters]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Personal Finance Dashboard</h1>
-          <p className="text-muted-foreground">
-            Track your income and expenses, visualize your spending patterns, and manage your budget effectively.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <Sidebar />
 
-        <div className="space-y-8">
-          <SummaryCards summary={summary} />
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 space-y-4">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Finance Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Track income, expenses, and budget</p>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {new Date().toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </div>
+          </div>
 
-          <TransactionFilters
+          {/* Summary Cards */}
+          <CompactSummaryCards summary={summary} />
+
+          {/* Filters */}
+          <CompactFilters
             filters={filters}
             onFiltersChange={setFilters}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <IncomeVsExpensesChart data={monthlyData} />
-            <ExpenseBreakdownChart data={categoryBreakdown} />
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <CompactIncomeVsExpensesChart data={monthlyData} />
+            </div>
+            <div>
+              <CompactExpenseBreakdownChart data={categoryBreakdown} />
+            </div>
           </div>
 
-          <TransactionList
+          {/* Transaction List */}
+          <CompactTransactionList
             transactions={filteredTransactions}
             onUpdateTransaction={updateTransaction}
             onDeleteTransaction={deleteTransaction}
