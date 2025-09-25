@@ -2,13 +2,16 @@
 
 import { useState, useMemo } from 'react';
 import { AppSidebar } from '@/components/layout/AppSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { CompactSummaryCards } from '@/components/dashboard/CompactSummaryCards';
 import { CompactTransactionList } from '@/components/transactions/CompactTransactionList';
 import { CompactIncomeVsExpensesChart } from '@/components/charts/CompactIncomeVsExpensesChart';
 import { CompactExpenseBreakdownChart } from '@/components/charts/CompactExpenseBreakdownChart';
 import { CompactFilters } from '@/components/filters/CompactFilters';
 import { useTransactions } from '@/hooks/useLocalStorage';
+import { useTheme } from '@/hooks/use-theme';
+import { Switch } from '@/components/ui/switch';
+import { Moon, Sun } from 'lucide-react';
 import { calculateFinancialSummary, calculateCategoryBreakdown, calculateMonthlyData } from '@/lib/utils/finance';
 import { DEFAULT_FILTER } from '@/lib/constants';
 import { FilterState } from '@/lib/types';
@@ -16,6 +19,7 @@ import { FilterState } from '@/lib/types';
 export default function Home() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useTransactions();
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTER);
+  const { theme, setTheme } = useTheme();
 
   const summary = useMemo(() => {
     return calculateFinancialSummary(transactions, filters);
@@ -68,22 +72,35 @@ export default function Home() {
         {/* Sidebar */}
         <AppSidebar />
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Finance Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Track income, expenses, and budget</p>
+            <div className="flex items-center gap-4">
+              <SidebarTrigger />
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Finance Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Track income, expenses, and budget</p>
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {new Date().toLocaleDateString('en-US', {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Sun className="h-4 w-4 text-muted-foreground" />
+                <Switch
+                  checked={theme === 'dark'}
+                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                />
+                <Moon className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="text-xs text-muted-foreground" id="current-date">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
             </div>
           </div>
 
