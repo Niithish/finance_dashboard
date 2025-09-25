@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Sidebar } from '@/components/layout/Sidebar';
+import { AppSidebar } from '@/components/layout/AppSidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { CompactSummaryCards } from '@/components/dashboard/CompactSummaryCards';
 import { CompactTransactionList } from '@/components/transactions/CompactTransactionList';
 import { CompactIncomeVsExpensesChart } from '@/components/charts/CompactIncomeVsExpensesChart';
@@ -62,9 +63,10 @@ export default function Home() {
   }, [transactions, filters]);
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <Sidebar />
+    <SidebarProvider>
+      <div className="min-h-screen bg-background flex">
+        {/* Sidebar */}
+        <AppSidebar />
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
@@ -113,6 +115,7 @@ export default function Home() {
           />
         </div>
       </div>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 }
